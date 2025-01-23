@@ -1,7 +1,7 @@
 package link
 
 import (
-	"fmt"
+	"go/adv-demo/pkg/middleware"
 	"go/adv-demo/pkg/req"
 	"go/adv-demo/pkg/res"
 	"net/http"
@@ -25,7 +25,7 @@ func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
 	}
 
 	router.HandleFunc("POST /link", handler.Create())
-	router.HandleFunc("PATCH /link/{id}", handler.Update())
+	router.Handle("PATCH /link/{id}", middleware.IsAuthed(handler.Update()))
 	router.HandleFunc("DELETE /link/{id}", handler.Delete())
 	router.HandleFunc("GET /{hash}", handler.GoTo())
 }
@@ -33,7 +33,6 @@ func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
 
 func (handler *LinkHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Create")
 		body, err := req.HandleBody[LinkCreateRequest](&w,r)
 		if err != nil {
 			return
@@ -59,7 +58,6 @@ func (handler *LinkHandler) Create() http.HandlerFunc {
 
 func (handler *LinkHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Update")
 		body, err := req.HandleBody[LinkUpdateRequest](&w,r)
 		if err != nil {
 			return
@@ -86,7 +84,6 @@ func (handler *LinkHandler) Update() http.HandlerFunc {
 
 func (handler *LinkHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Delete")
 		idString := r.PathValue("id")
 		id, err := strconv.ParseUint(idString, 10, 32)
 		if err != nil {
@@ -110,7 +107,6 @@ func (handler *LinkHandler) Delete() http.HandlerFunc {
 
 func (handler *LinkHandler) GoTo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Read")
 		hash := r.PathValue("hash")
 		link, err := handler.LinkRepository.GetByHash(hash)
 		if err != nil {

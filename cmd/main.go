@@ -14,6 +14,7 @@ import (
 	"go/adv-demo/internal/auth"
 	"go/adv-demo/internal/link"
 	"go/adv-demo/pkg/db"
+	"go/adv-demo/pkg/middleware"
 )
 
 func main() {
@@ -33,9 +34,15 @@ func main() {
 		LinkRepository: linkRepository,
 	})
 
+	// Middlewares
+	stack := middleware.Chain(
+		middleware.CORS, 
+		middleware.Logging,
+	)
+
 	server := http.Server{
 		Addr: ":8081",
-		Handler: router,
+		Handler: stack(router),
 	}
 
 	fmt.Println("Server listening")
