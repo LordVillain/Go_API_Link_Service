@@ -1,21 +1,14 @@
 package main
 
 import (
-	// "flag"
-	// "fmt"
 	"fmt"
-	"net/http"
-
-	// "os"
-	// "strings"
-	// "sync"
-	// "time"
 	"go/adv-demo/configs"
 	"go/adv-demo/internal/auth"
 	"go/adv-demo/internal/link"
 	"go/adv-demo/internal/user"
 	"go/adv-demo/pkg/db"
 	"go/adv-demo/pkg/middleware"
+	"net/http"
 )
 
 func main() {
@@ -38,6 +31,7 @@ func main() {
 
 	link.NewLinkHandler(router, link.LinkHandlerDeps{
 		LinkRepository: linkRepository,
+		Config: conf,
 	})
 
 	// Middlewares
@@ -59,7 +53,66 @@ func main() {
 
 
 
+// // contextWithTimeout
+// func main() {
+// 	ctx := context.Background()
+// 	ctxWithTimeout, cencel := context.WithTimeout(ctx, 4 * time.Second)
+// 	defer cencel()
 
+// 	done := make(chan struct{})
+// 	go func() {
+// 		time.Sleep(3 * time.Second)
+// 		close(done)
+// 	}()
+
+// 	select{
+// 	case <- done:
+// 		fmt.Println("Done task")
+// 	case <- ctxWithTimeout.Done():
+// 		fmt.Println("Timeout")
+// 	}
+// }
+
+
+// // contextWithValue
+// func main() {
+// 	type key int
+// 	const EmailKey key = 0
+// 	ctx := context.Background()
+// 	ctxWithValue := context.WithValue(ctx, EmailKey, "a@a.ru")
+	
+// 	userEmail, ok := ctxWithValue.Value(EmailKey).(string)
+// 	if ok {
+// 		fmt.Println(userEmail)
+// 	} else {
+// 		fmt.Println("No value")
+// 	}
+// }
+
+
+// // contextWithCencel
+
+// func tickOperation(ctx context.Context)  {
+// 	ticker := time.NewTicker(200 * time.Millisecond)
+// 	for {
+// 		select {
+// 		case <-ticker.C:
+// 			fmt.Println("Tick")
+// 		case <-ctx.Done():
+// 			fmt.Println("Cancel")
+// 			return
+// 		}
+// 	}
+// }
+
+// func main() {
+// 	ctx, cencel := context.WithCancel(context.Background())
+// 	go tickOperation(ctx)
+
+// 	time.Sleep(2 * time.Second)
+// 	cencel()
+// 	time.Sleep(2 * time.Second)
+// }
 
 
 // самый простой пример создания сервера
